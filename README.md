@@ -36,11 +36,11 @@ Le client est développé avec **React** et utilise **Vite** comme outil de buil
 
 ### Frontend
 
-- **Svelte**
+- **React**
 - **Vite**
 - **Tailwind CSS** (avec DaisyUI pour les composants)
-- **svelte-dnd-action** (pour le drag-and-drop)
-- **svelte-exmarkdown** (pour le rendu Markdown)
+- **@dnd-kit/core** (pour le drag-and-drop)
+- **react-markdown** (pour le rendu Markdown)
 
 ---
 
