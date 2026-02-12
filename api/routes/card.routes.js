@@ -7,9 +7,9 @@ import { checkRole } from "../middlewares/auth.middleware.js";
 const router = express.Router();
 
 router.get('/', checkRole('user'), getAll);
-router.get('/:id', checkRole('admin'), validateId, getById);
-router.post('/', checkRole('admin'), validateCardCreation, create);
+router.get('/:id', checkRole('user'), validateId, getById);
+router.post('/', checkRole('user'), validateCardCreation, create);
 router.patch('/:id', checkRole('user'), validateId, validateCardUpdate, update);
-router.delete('/:id', checkRole('admin'), validateId, deleteById);
+router.delete('/:id', checkRole('user'), validateId, deleteById);
 
 export default router;

@@ -1,14 +1,14 @@
 import { Tag } from '../models/tag.model.js';
 import { StatusCodes } from 'http-status-codes';
 
-export async function getAll(_req, res) {
-    const tags = await Tag.findAll();
+export async function getAll(req, res) {
+    const tags = await Tag.findAll({ where: { user_id: req.userId } });
     return res.json(tags);
 }
 
 export async function create(req, res) {
     try {
-        const tag = await Tag.create(req.body)
+        const tag = await Tag.create({ ...req.body, user_id: req.userId });
         return res.status(StatusCodes.CREATED).json(tag);
     } catch (error) {
         if (error.name === 'SequelizeUniqueConstraintError') {
@@ -21,7 +21,7 @@ export async function create(req, res) {
 }
 
 export async function getById(req, res) {
-    const tag = await Tag.findByPk(req.params.id);
+    const tag = await Tag.findOne({ where: { id: req.params.id, user_id: req.userId } });
     if (!tag) {
         return res.status(StatusCodes.NOT_FOUND).json({ error: "Tag not found" });
     }
@@ -29,7 +29,7 @@ export async function getById(req, res) {
 }
 
 export async function deleteById(req, res) {
-    const deletedCount = await Tag.destroy({ where: { id: req.params.id } });
+    const deletedCount = await Tag.destroy({ where: { id: req.params.id, user_id: req.userId } });
     if (deletedCount === 0) {
         return res.status(StatusCodes.NOT_FOUND).json({ error: 'Tag not found' });
     }
@@ -38,7 +38,7 @@ export async function deleteById(req, res) {
 
 export async function update(req, res) {
     const [updatedCount, updatedTag] = await Tag.update(req.body, {
-        where: { id: req.params.id },
+        where: { id: req.params.id, user_id: req.userId },
         returning: true
     });
     if (updatedCount === 0) {

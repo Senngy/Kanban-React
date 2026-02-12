@@ -4,7 +4,7 @@ import { checkBody } from "../utils/common.util.js";
 export function validateListCreation(req, res, next) {
   const createListSchema = Joi.object({
     title: Joi.string().required(),
-    position: Joi.number().required()
+    position: Joi.number().optional()
   });
   checkBody(createListSchema, req.body, res, next);
 }

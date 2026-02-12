@@ -7,6 +7,9 @@ export function validateCardCreation(req, res, next) {
         position: Joi.number().required(),
         list_id: Joi.number().required(),
         color: Joi.string(),
+        description: Joi.string().allow("", null),
+        tags: Joi.array().items(Joi.number()), 
+        is_done: Joi.boolean()
     });
     checkBody(createCardSchema, req.body, res, next);
 }
@@ -16,7 +19,10 @@ export function validateCardUpdate(req, res, next) {
         content: Joi.string(),
         position: Joi.number(),
         color: Joi.string(),
-        list_id: Joi.number()
+        description: Joi.string().allow("", null),
+        list_id: Joi.number(),
+        tags: Joi.array().items(Joi.number()),
+        is_done: Joi.boolean()
     });
     checkBody(updateCardSchema, req.body, res, next);
 }

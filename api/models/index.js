@@ -6,6 +6,35 @@ import { Tag } from "./tag.model.js";
 import { User } from "./user.model.js";
 import { sequelize } from "./sequelize.client.js";
 
+// User <--> List (One-to-Many)
+User.hasMany(List, {
+  as: "lists",
+  foreignKey: {
+    name: "user_id",
+    allowNull: false
+  },
+  onDelete: "CASCADE"
+});
+
+User.hasMany(Tag, {
+  as: "tags",
+  foreignKey: {
+    name: "user_id",
+    allowNull: false
+  },
+  onDelete: "CASCADE"
+});
+
+Tag.belongsTo(User, {
+  as: "user",
+  foreignKey: "user_id"
+});
+
+List.belongsTo(User, {
+  as: "user",
+  foreignKey: "user_id"
+});
+
 
 // List <--> Card (One-to-Many)
 List.hasMany(Card, {

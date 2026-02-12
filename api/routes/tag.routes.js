@@ -2,14 +2,15 @@ import express from "express";
 import { getAll, getById, create, update, deleteById, getCardsByTagId } from '../controllers/tag.controller.js';
 import { validateTagCreation, validateTagUpdate } from '../middlewares/tag.middleware.js';
 import { validateId } from '../middlewares/common.middleware.js';
+import { checkRole } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
-router.get('/', getAll);
-router.get('/:id', validateId, getById);
-router.post('/', validateTagCreation, create);
-router.patch('/:id', validateId, validateTagUpdate, update);
-router.delete('/:id', validateId, deleteById);
-router.get('/:id/cards', validateId, getCardsByTagId);
+router.get('/', checkRole('user'), getAll);
+router.get('/:id', checkRole('user'), validateId, getById);
+router.post('/', checkRole('user'), validateTagCreation, create);
+router.patch('/:id', checkRole('user'), validateId, validateTagUpdate, update);
+router.delete('/:id', checkRole('user'), validateId, deleteById);
+router.get('/:id/cards', checkRole('user'), validateId, getCardsByTagId);
 
 export default router;

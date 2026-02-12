@@ -7,7 +7,7 @@ import { Role } from '../models/role.model.js';
 export async function register(req, res) {
     // récupération du username et du mdp 
     // et du nom du role
-    const { username, password, role } = req.body;
+    const { username, password, role, email, first_name, last_name } = req.body;
     try {
         const hashedPassword = scrypt.hash(password);
         // par défaut on associe le role User
@@ -27,13 +27,30 @@ export async function register(req, res) {
 
         //création du user en BDD
         // on ajoute le nom du role
+        //création du user en BDD
+        // on ajoute le nom du role
         const user = await User.create({
             username, 
             password: hashedPassword,
-            role_id
+            role_id,
+            email,
+            first_name,
+            last_name
         });
-        // on renvoit les infos au client
-        return res.status(StatusCodes.CREATED).json(user);
+
+        // Generate token (Auto-login)
+        const token = jwt.sign({ user_id: user.id }, process.env.JWT_SECRET, { expiresIn: 60 * 15 });
+
+        // Set cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 60 * 60 * 1000 // 1 hour
+        });
+
+        // on renvoit les infos au client (token + user)
+        return res.status(StatusCodes.CREATED).json({ token, user });
     } catch (error) {
         if (error.name === 'SequelizeUniqueConstraintError') {
 
@@ -75,6 +92,15 @@ export async function login(req, res) {
                 // créer un token jwt
                 const token = jwt.sign({ user_id: user.id }, process.env.JWT_SECRET, { expiresIn: 60 * 15 });
                 // renvoyer le token à l'utilisateur
+
+                // creation du cookie
+                res.cookie('token', token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production', // true en prod avec https
+                    sameSite: 'strict',
+                    maxAge: 60 * 60 * 1000 // 1 heure
+                });
+
                 return res.status(StatusCodes.OK).json({token: token});
 
             } else {
@@ -111,4 +137,4 @@ export async function me (req, res) {
     }
 }
 
-const req ={};
+

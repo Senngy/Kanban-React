@@ -8,13 +8,17 @@ import { Role } from "../models/role.model.js";
 export function validateUserCreation(req, res, next) {
     const createUserSchema = Joi.object({
         username: Joi.string().required(),
-        password: Joi.string().required(),
+        password: Joi.string().min(8).required(),
+        email: Joi.string().email().required(),
+        first_name: Joi.string().required(),
+        last_name: Joi.string().required(),
         role: Joi.string().required() // l'utilisateur ne connait pas les id, il doit fournir le nom du role
     });
     checkBody(createUserSchema, req.body, res, next);
 }
 
 export function authenticate(req, res, next){ 
+    /*
     const authHeader = req.headers.authorization;
     
     // Si le header n'existe pas
@@ -24,8 +28,15 @@ export function authenticate(req, res, next){
     {
         return res.status(StatusCodes.UNAUTHORIZED).json({error: "missing token"})
     }
-    const token = authHeader.split(' ')[1];
+        */
+
+    //const token = authHeader.split(' ')[1];
+    const token = req.cookies.token; 
     console.log(token);
+    if (! token)
+    {
+        return res.status(StatusCodes.UNAUTHORIZED).json({error: "missing token"})
+    }
 
     try {
         const dataDecoded = jwt.verify(token, process.env.JWT_SECRET);

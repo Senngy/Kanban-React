@@ -9,6 +9,11 @@ Card.init({
     allowNull: false
   },
 
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+
   position: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -19,6 +24,12 @@ Card.init({
     type: DataTypes.STRING(7),  // Hexadecimal code #FF00FF
     allowNull: false,
     defaultValue: "#FFFFFF" // Blanc
+  },
+
+  is_done: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
   }
 }, {
   sequelize,

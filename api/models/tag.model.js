@@ -7,7 +7,7 @@ Tag.init({
   name: {
     type: DataTypes.TEXT,
     allowNull: false,
-    unique: true
+    // unique: true // Removed to allow different users to have tags with same name
   },
 
   color: {
