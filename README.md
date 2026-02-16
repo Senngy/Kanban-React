@@ -1,4 +1,4 @@
-# Kanban [🛠️ EN TRAVAUX 🚧]
+# Kanban
 
 Application de gestion de tâches inspirée des tableaux Kanban classiques.  
 Projet full-stack avec API backend Node.js/Express et frontend React.
