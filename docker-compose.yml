@@ -1,0 +1,50 @@
+services:
+  database:
+    image: postgres:15-alpine
+    container_name: kanban-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-kanban}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - kanban-network
+
+  api:
+    build: ./api
+    container_name: kanban-api
+    environment:
+      PORT: 3000
+      PG_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@database:5432/${POSTGRES_DB:-kanban}
+      JWT_SECRET: ${JWT_SECRET:-change_this_secret}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change_this_refresh_secret}
+      CORS_ORIGINS: http://localhost:5173,http://localhost:8080
+    depends_on:
+      - database
+    ports:
+      - "3000:3000"
+    networks:
+      - kanban-network
+
+  client:
+    build:
+      context: ./client
+      args:
+        VITE_API_URL: http://localhost:3000
+    container_name: kanban-client
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+    networks:
+      - kanban-network
+
+volumes:
+  pgdata:
+
+networks:
+  kanban-network:
+    driver: bridge
