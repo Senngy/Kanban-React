@@ -7,12 +7,3 @@ export function validateId(req, res, next) {
   }
   next();
 }
-
-export function errorHandler(err, _req, res, next) {
-  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: err.message,
-      // Only show stack in development
-      details: process.env.NODE_ENV === 'production' ? undefined : err.stack
-  });
-  next();
-}

@@ -1,8 +1,8 @@
 import express from 'express';
-import { getAll, getById, create, update, deleteById, copy } from '../controllers/list.controller.js';
-import { validateListCreation, validateListUpdate } from '../middlewares/list.middleware.js';
-import { validateId } from '../middlewares/common.middleware.js';
-import { checkRole } from '../middlewares/auth.middleware.js';
+import { getAll, getById, create, update, deleteById, copy } from './list.controller.js';
+import { validateListCreation, validateListUpdate } from './list.middleware.js';
+import { validateId } from '../../middlewares/common.middleware.js';
+import { checkRole } from '../auth/auth.middleware.js';
 
 const router = express.Router();
 

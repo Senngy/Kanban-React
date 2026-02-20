@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { checkBody } from "../utils/common.util.js";
+import { checkBody } from "../../utils/common.util.js";
 
 export function validateListCreation(req, res, next) {
   const createListSchema = Joi.object({
@@ -10,9 +10,9 @@ export function validateListCreation(req, res, next) {
 }
 
 export function validateListUpdate(req, res, next) {
-    const updateListSchema = Joi.object({
-        title: Joi.string(),
-        position: Joi.number()
-    });
-    checkBody(updateListSchema, req.body, res, next);
+  const updateListSchema = Joi.object({
+    title: Joi.string(),
+    position: Joi.number()
+  });
+  checkBody(updateListSchema, req.body, res, next);
 }

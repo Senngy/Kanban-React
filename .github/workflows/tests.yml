@@ -1,0 +1,36 @@
+name: Backend CI (Tests)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: api/package.json
+        
+    - name: Install dependencies
+      run: npm install
+      working-directory: api
+
+    - name: Run unit tests
+      run: npm run test -- --run
+      working-directory: api
+      env:
+        JWT_SECRET: test_secret
+        JWT_REFRESH_SECRET: test_refresh_secret

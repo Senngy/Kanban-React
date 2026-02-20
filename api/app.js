@@ -4,12 +4,13 @@ import helmet from "helmet";
 import express from "express";
 // import session from "express-session";
 import cookies from "cookie-parser";
-import { authenticate } from "./middlewares/auth.middleware.js";
-import { errorHandler } from "./middlewares/common.middleware.js";
-import listRoutes from "./routes/list.routes.js";
-import cardRoutes from "./routes/card.routes.js";
-import tagRoutes from "./routes/tag.routes.js";
-import authRoutes from "./routes/auth.routes.js";
+import { logger } from "./utils/logger.js";
+import { authenticate } from "./modules/auth/auth.middleware.js";
+import { errorHandler } from "./middlewares/error.middleware.js";
+import listRoutes from "./modules/lists/list.routes.js";
+import cardRoutes from "./modules/cards/card.routes.js";
+import tagRoutes from "./modules/tags/tag.routes.js";
+import authRoutes from "./modules/auth/auth.routes.js";
 import demoRoutes from "./routes/demo.routes.js";
 
 const PORT = process.env.PORT || 3000;
@@ -22,6 +23,12 @@ const corsOption = {
 
 app.use(cors(corsOption));
 app.use(helmet());
+
+// Middleware de log de requêtes
+app.use((req, res, next) => {
+  logger.info({ method: req.method, url: req.url }, `HTTP Request: ${req.method} ${req.url}`);
+  next();
+});
 
 /*
 app.use(session({

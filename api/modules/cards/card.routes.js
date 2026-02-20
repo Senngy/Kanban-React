@@ -1,8 +1,8 @@
 import express from "express";
-import { getAll, getById, create, update, deleteById } from '../controllers/card.controller.js';
-import { validateCardCreation, validateCardUpdate } from '../middlewares/card.middleware.js';
-import { validateId } from '../middlewares/common.middleware.js';
-import { checkRole } from "../middlewares/auth.middleware.js";
+import { getAll, getById, create, update, deleteById } from './card.controller.js';
+import { validateCardCreation, validateCardUpdate } from './card.middleware.js';
+import { validateId } from '../../middlewares/common.middleware.js';
+import { checkRole } from "../auth/auth.middleware.js";
 
 const router = express.Router();
 

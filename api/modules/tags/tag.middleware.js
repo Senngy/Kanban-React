@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { checkBody } from "../utils/common.util.js";
+import { checkBody } from "../../utils/common.util.js";
 
 export function validateTagCreation(req, res, next) {
     const createTagSchema = Joi.object({

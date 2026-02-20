@@ -1,11 +1,17 @@
 export default async function api(endpoint, method = "GET", body) {
+  const token = localStorage.getItem("token");
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
 
   const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
     method,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: body ? JSON.stringify(body) : undefined, // Include the body only if it's provided (not for GET requests)
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
     credentials: "include",
   });
 

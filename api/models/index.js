@@ -4,6 +4,7 @@ import { List } from "./list.model.js";
 import { Role } from "./role.model.js";
 import { Tag } from "./tag.model.js";
 import { User } from "./user.model.js";
+import { RefreshToken } from "./refresh_token.model.js";
 import { sequelize } from "./sequelize.client.js";
 
 // User <--> List (One-to-Many)
@@ -72,10 +73,20 @@ User.belongsTo(Role, {
 })
 
 Role.hasMany(User, {
-  as: "users", 
+  as: "users",
   foreignKey: {
     name: "role_id",
   },
 })
+User.hasMany(RefreshToken, {
+  as: "refreshTokens",
+  foreignKey: "user_id",
+  onDelete: "CASCADE"
+});
+RefreshToken.belongsTo(User, {
+  as: "user",
+  foreignKey: "user_id"
+});
+
 // Exporter nos modèles
-export { Card, List, Role, Tag, User, sequelize };
+export { Card, List, Role, Tag, User, RefreshToken, sequelize };

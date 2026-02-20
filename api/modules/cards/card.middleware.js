@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { checkBody } from "../utils/common.util.js";
+import { checkBody } from "../../utils/common.util.js";
 
 export function validateCardCreation(req, res, next) {
     const createCardSchema = Joi.object({
@@ -8,7 +8,7 @@ export function validateCardCreation(req, res, next) {
         list_id: Joi.number().required(),
         color: Joi.string(),
         description: Joi.string().allow("", null),
-        tags: Joi.array().items(Joi.number()), 
+        tags: Joi.array().items(Joi.number()),
         is_done: Joi.boolean()
     });
     checkBody(createCardSchema, req.body, res, next);
