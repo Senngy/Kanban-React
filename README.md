@@ -1,6 +1,7 @@
-# Kanban [🛠️ EN TRAVAUX 🚧]
+# Kanban
 
-Voici un projet dont j'ai repris l'api fais lors de ma formation. C'est une application de gestion de tâches inspirée des tableaux Kanban classiques. Elle permet de créer, organiser et gérer des listes et des cartes. Ce projet est divisé en deux parties : une API backend et un client frontend.
+Application de gestion de tâches inspirée des tableaux Kanban classiques.  
+Projet full-stack avec API backend Node.js/Express et frontend React.
 
 ## 📝 Description du projet
 
@@ -16,10 +17,11 @@ Le client est développé avec **React** et utilise **Vite** comme outil de buil
 
 ## 🚀 Objectifs
 
-- Connaître et savoir se prémunir des failles de sécurité les plus courantes
-- Implémenter un système d'authentification
+- Apprendre et mettre en place des **bonnes pratiques DevOps / sécurité**
+- Authentification JWT sécurisée via cookies httpOnly
 - Mettre en place un système de rôles (admin, utilisateur).
-- Retravailler le côté client avec React
+- UI responsive et UX améliorée (drag-and-drop)
+- Préparer un projet portfolio complet, testable et maintenable
 
 ---
 
@@ -27,27 +29,30 @@ Le client est développé avec **React** et utilise **Vite** comme outil de buil
 
 ### Backend
 
-- **Node.js**
-- **Express**
-- **Sequelize** (ORM)
-- **PostgreSQL**
-- **Joi** (validation des données)
-- **dotenv** (gestion des variables d'environnement)
+- Node.js + Express
+- PostgreSQL via Sequelize ORM
+- Joi (validation)
+- dotenv (variables d'environnement)
+- Auth JWT (à migrer vers httpOnly cookies)
 
 ### Frontend
 
-- **React**
-- **Vite**
-- **Tailwind CSS** (avec DaisyUI pour les composants)
-- **@dnd-kit/core** (pour le drag-and-drop)
-- **react-markdown** (pour le rendu Markdown)
+- React + Vite
+- Tailwind CSS + DaisyUI
+- @dnd-kit/core (drag-and-drop)
+- react-markdown
+
+### DevOps
+
+- Git + GitHub Actions
+- Docker + docker-compose (en cours)
 
 ---
 
 ## 📂 Structure du projet
 
-- **`api/`** : Contient le code backend (API).
-- **`client/`** : Contient le code frontend (interface utilisateur).
+- **`api/`** : backend.
+- **`client/`** : frontend.
 
 ---
 
@@ -87,3 +92,23 @@ cd client
 npm install
 npm run dev
 ```
+
+## Authentification
+
+- JWT (à migrer vers cookies httpOnly + refresh token)
+
+- Middleware pour sécuriser les endpoints
+
+- Gestion rôles admin / utilisateur
+
+## Améliorations en cours
+
+- Drag-and-drop complet des cartes
+
+- CI/CD automatisé avec tests
+
+- Dockerisation backend + frontend
+
+- Logging structuré
+
+- Documentation Swagger pour API
