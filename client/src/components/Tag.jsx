@@ -8,15 +8,15 @@ export default function Tag({ tag, className = "" }) {
 
     return (
         <span
-            className={`px-2 py-0.5 text-[11px] rounded-full shadow-sm inline-block truncate max-w-[100px] border border-white/20 ${className}`}
+            className="px-1.5 py-0.5 rounded-full text-[8px] font-extrabold uppercase tracking-tight text-white shadow-sm"
             style={{
-                backgroundColor: liveTag.color || '#e5e7eb',
-                color: 'black', // Defaulting to white text for now, or we can use a helper for contrast
-                textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                backgroundColor: `${tag.color}cc`, // Ajout d'une légère transparence
+                border: `1px solid ${tag.color}`,
+                boxShadow: `0 2px 8px -2px ${tag.color}66`, // Glow subtile
+                textShadow: '0 1px 2px rgba(0,0,0,0.2)'
             }}
-            title={liveTag.name}
         >
-            {liveTag.name}
+            {tag.name}
         </span>
     );
 }

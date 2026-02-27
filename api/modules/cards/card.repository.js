@@ -1,4 +1,5 @@
 import { Card, List } from "../../models/index.js";
+import { Op } from "sequelize";
 
 export const cardRepository = {
     async findAll(filters = {}, include = "tags") {
@@ -8,7 +9,8 @@ export const cardRepository = {
         });
     },
 
-    async findAllWithListUser(userId, listId = null, include = "tags") {
+    async findAllWithListUser(userId, listId = null, include = "tags", pagination = {}) {
+        const { limit, offset } = pagination;
         const whereList = { user_id: userId };
         if (listId) whereList.id = listId;
 
@@ -18,10 +20,13 @@ export const cardRepository = {
                     model: List,
                     as: 'list',
                     where: whereList,
-                    attributes: [] // On ne veut pas les données de la liste, juste le filtrage
+                    attributes: []
                 },
-                include // "tags" par défaut
-            ]
+                include
+            ],
+            limit: limit ? parseInt(limit) : undefined,
+            offset: offset ? parseInt(offset) : undefined,
+            order: [['position', 'ASC']]
         });
     },
 
@@ -44,6 +49,16 @@ export const cardRepository = {
     async delete(id) {
         return await Card.destroy({
             where: { id }
+        });
+    },
+
+    async incrementPosition(listId, threshold) {
+        return await Card.increment('position', {
+            by: 1,
+            where: {
+                list_id: listId,
+                position: { [Op.gt]: threshold }
+            }
         });
     }
 };

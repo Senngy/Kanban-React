@@ -17,9 +17,10 @@ export const cardService = {
     async getCards(params, userId) {
         const listId = params.list_id ? parseInt(params.list_id) : null;
         const include = validateInclude(params.include);
+        const { limit, offset } = params;
 
-        // Optimisation : une seule requête jointe
-        return await cardRepository.findAllWithListUser(userId, listId, include);
+        // Optimisation : une seule requête jointe avec pagination
+        return await cardRepository.findAllWithListUser(userId, listId, include, { limit, offset });
     },
 
     async getCardDetails(id, params, userId) {
@@ -76,6 +77,14 @@ export const cardService = {
         const { tags, ...updateData } = data;
 
         if (Object.keys(updateData).length > 0) {
+            // Si la position change ou si on change de liste, on doit gérer le décalage
+            if (updateData.position !== undefined || updateData.list_id !== undefined) {
+                const targetListId = updateData.list_id || card.list_id;
+                const targetPosition = updateData.position || card.position;
+
+                // Décaler les cartes existantes dans la liste cible
+                await cardRepository.incrementPosition(targetListId, targetPosition - 1);
+            }
             await cardRepository.update(id, updateData);
         }
 

@@ -8,8 +8,8 @@ import Board from "./components/Board";
 import Layout from "./components/Layout";
 import { Toaster } from "react-hot-toast";
 import Background from "./components/Background";
-import "./styles/premium-theme.css";
-import './App.css'
+// import "./styles/premium-theme.css"; // Removed conflictual import
+// import './App.css' // Removed conflictual import
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {

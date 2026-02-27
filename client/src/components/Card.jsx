@@ -7,7 +7,7 @@ import { deleteCard, updateCard } from "../lib/services/card.service";
 import { getTags } from "../lib/services/tag.service";
 import Tag from "./Tag";
 
-export default function Card({ card, auth, onUpdateCard, onDeleteCard }) {
+export default function Card({ card, auth, onUpdateCard, onDeleteCard, isOverlay }) {
   const [hovered, setHovered] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -78,34 +78,38 @@ export default function Card({ card, auth, onUpdateCard, onDeleteCard }) {
       onMouseLeave={() => setHovered(false)}
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
-      className={`glass-panel p-1 flex justify-between items-center relative group hover:bg-white/40 transition-all cursor-pointer ${card.is_done ? "opacity-60 grayscale" : ""
+      className={`glass-card p-2 flex justify-between items-start relative group rounded-2xl border-white/5 hover:border-white/20 ${card.is_done ? "opacity-60 grayscale-[0.3]" : ""} ${isOverlay ? "shadow-2xl ring-1 ring-white/20" : ""
         }`}
     >
       <div className="flex gap-2 items-start w-full">
-        {/* Checkbox for completion */}
-        <input
-          type="checkbox"
-          checked={card.is_done || false}
-          onChange={async (e) => {
-            e.stopPropagation(); // prevent opening modal
-            try {
-              // Ensure we send only IDs for tags, not full objects
-              const tagIds = card.tags ? card.tags.map(t => t.id) : [];
-              const updatedCard = await updateCard({
-                ...card,
-                is_done: e.target.checked,
-                tags: tagIds
-              });
-              onUpdateCard && onUpdateCard(updatedCard);
-            } catch (err) {
-              console.error("Failed to toggle completion", err);
-            }
-          }}
-          className="checkbox checkbox-xs checkbox-primary mt-1"
-        />
+        <label className="relative flex items-center cursor-pointer group mt-1">
+          <input
+            type="checkbox"
+            checked={card.is_done || false}
+            onChange={async (e) => {
+              e.stopPropagation();
+              try {
+                const tagIds = card.tags ? card.tags.map(t => t.id) : [];
+                const updatedCard = await updateCard({
+                  ...card,
+                  is_done: e.target.checked,
+                  tags: tagIds
+                });
+                onUpdateCard && onUpdateCard(updatedCard);
+              } catch (err) {
+                console.error("Failed to toggle completion", err);
+              }
+            }}
+            className="peer h-3.5 w-3.5 cursor-pointer appearance-none rounded-sm border border-white/20 transition-all checked:bg-indigo-500 checked:border-indigo-500 hover:border-indigo-400 focus:outline-none"
+          />
+          <span className="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+          </span>
+        </label>
 
         <div className="flex flex-col gap-1 w-full">
-          {/* Tags */}
           {card.tags && card.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-1">
               {card.tags.map(tag => (
@@ -114,21 +118,20 @@ export default function Card({ card, auth, onUpdateCard, onDeleteCard }) {
             </div>
           )}
 
-          <div className="markdown-body">
+          <div className="markdown-body text-xs font-medium leading-relaxed text-slate-200">
             <ReactMarkdown>{card.content}</ReactMarkdown>
           </div>
 
-          {/* Description Icon */}
-          {card.description && (
-            <div className="text-white/50 mt-1" title="Cette carte a une description">
-              <FaAlignLeft size={10} />
+          {(card.description || (card.tags && card.tags.length > 0)) && (
+            <div className="flex items-center gap-2 mt-1 opacity-30">
+              {card.description && <FaAlignLeft size={10} title="Description présente" />}
             </div>
           )}
         </div>
       </div>
 
       <div
-        className={`flex gap-2 absolute right-2 items-center h-full transition-opacity ${hovered ? "opacity-100" : "opacity-0"
+        className={`flex gap-1 absolute -top-0.5 -right-0 transition-all duration-300 ${hovered ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-1 scale-90 pointer-events-none"
           }`}
       >
         <button
@@ -136,102 +139,106 @@ export default function Card({ card, auth, onUpdateCard, onDeleteCard }) {
             e.stopPropagation();
             handleOpenModal();
           }}
-          className="glass-button text-amber-600 h-[30px] w-[30px] flex items-center justify-center rounded-full"
+          className="flex h-6 w-6 items-center justify-center rounded-xl bg-slate-800/80 backdrop-blur-md border border-white/10 text-indigo-400 hover:bg-indigo-500 hover:text-white transition-all shadow-xl"
         >
-          <FaPen size={12} />
+          <FaPen size={11} />
         </button>
-
-        {/* Edit Modal */}
-        {modalOpen && (
-          <Modal
-            isOpen={modalOpen}
-            onRequestClose={() => setModalOpen(false)}
-            title="Modifier la carte"
-          >
-            {error && <p className="text-red-500">{error}</p>}
-            <form onSubmit={editCard} className="flex flex-col gap-2">
-              <label className="text-xs font-semibold text-black uppercase tracking-wider ml-1">Titre :</label>
-              <textarea
-                className="textarea text-white h-20 bg-white/5"
-                style={{ backgroundColor: 'black' }}
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Titre de la carte..."
-              />
-
-              <label className="text-xs font-semibold text-black uppercase tracking-wider mt-2 ml-1">Description :</label>
-              <textarea
-                className="textarea text-white h-32 text-sm bg-white/5"
-                style={{ backgroundColor: 'black' }}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Ajouter une description détaillée (Markdown supporté)..."
-              />
-
-              {/* Tag Selection */}
-              <div className="flex flex-col gap-1 my-2">
-                <span className="text-sm font-semibold text-black">Tags:</span>
-                <div className="flex flex-wrap gap-2">
-                  {availableTags.map(tag => {
-                    const isSelected = selectedTagIds.includes(tag.id);
-                    return (
-                      <button
-                        key={tag.id}
-                        type="button"
-                        onClick={() => toggleTag(tag.id)}
-                        className={`px-2 py-1 rounded-full text-xs font-bold border transition-colors ${isSelected
-                          ? "ring-2 ring-offset-1 text-black opacity-100"
-                          : "bg-white text-gray-500 border-gray-300 opacity-70 hover:opacity-100"
-                          }`}
-                        style={{
-                          backgroundColor: isSelected ? tag.color : undefined,
-                          borderColor: tag.color
-                        }}
-                      >
-                        {tag.name}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="flex justify-center gap-2">
-                <button className="bg-blue-500 text-white px-2 py-1 rounded">
-                  Modifier
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="bg-red-500 text-white px-2 py-1 rounded"
-                >
-                  Annuler
-                </button>
-              </div>
-            </form>
-          </Modal>
-        )}
 
         <button
           onClick={(e) => {
             e.stopPropagation();
             setConfirmOpen(true);
           }}
-          className="glass-button text-red-600 h-[30px] w-[30px] flex items-center justify-center rounded-full"
+          className="flex h-6 w-6 items-center justify-center rounded-xl bg-slate-800/80 backdrop-blur-md border border-white/10 text-rose-400 hover:bg-rose-500 hover:text-white transition-all shadow-xl"
         >
-          <FaTrash size={12} />
+          <FaTrash size={11} />
         </button>
-
-        {/* Confirm Modal */}
-        {confirmOpen && (
-          <ModalConfirm
-            isOpen={confirmOpen}
-            onClose={() => setConfirmOpen(false)}
-            onConfirm={handleDeleteCard}
-            title="Supprimer la carte"
-            message="Confirmez que vous souhaitez supprimer cette carte"
-          />
-        )}
       </div>
+
+      {modalOpen && (
+        <Modal
+          isOpen={modalOpen}
+          onRequestClose={() => setModalOpen(false)}
+          title="✍️ Éditer la carte"
+        >
+          {error && <p className="text-rose-400 mb-4 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg text-sm">{error}</p>}
+          <form onSubmit={editCard} className="flex flex-col gap-5">
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">Titre de la tâche</label>
+              <textarea
+                className="glass-input h-24 text-base focus:ring-indigo-500"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Qu'y a-t-il à faire ?"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">Description détaillée</label>
+              <textarea
+                className="glass-input h-40 text-sm focus:ring-indigo-500"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Ajoutez des détails, des liens, du markdown..."
+              />
+            </div>
+
+            <div className="flex flex-col gap-3 px-1">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Étiquettes</span>
+              <div className="flex flex-wrap gap-2">
+                {availableTags.map(tag => {
+                  const isSelected = selectedTagIds.includes(tag.id);
+                  return (
+                    <button
+                      key={tag.id}
+                      type="button"
+                      onClick={() => toggleTag(tag.id)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all duration-200 ${isSelected
+                        ? "ring-2 ring-indigo-500 ring-offset-2 ring-offset-slate-900 scale-105"
+                        : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10"
+                        }`}
+                      style={{
+                        backgroundColor: isSelected ? tag.color : undefined,
+                        borderColor: tag.color,
+                        color: isSelected ? '#fff' : undefined,
+                        textShadow: isSelected ? '0 1px 2px rgba(0,0,0,0.3)' : 'none'
+                      }}
+                    >
+                      {tag.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-4 pt-4 border-t border-white/10">
+              <button
+                type="submit"
+                className="flex-1 glass-button py-3 px-4 rounded-xl text-sm"
+              >
+                Sauvegarder les modifications
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalOpen(false)}
+                className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-sm font-semibold transition-all"
+              >
+                Annuler
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {confirmOpen && (
+        <ModalConfirm
+          isOpen={confirmOpen}
+          onClose={() => setConfirmOpen(false)}
+          onConfirm={handleDeleteCard}
+          title="❌ Supprimer la carte"
+          message="Cette action est irréversible. Voulez-vous vraiment supprimer cette carte ?"
+        />
+      )}
     </div>
   );
 }

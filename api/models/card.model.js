@@ -1,7 +1,7 @@
 import { Model, DataTypes } from "sequelize";
 import { sequelize } from "./sequelize.client.js";
 
-export class Card extends Model {}
+export class Card extends Model { }
 
 Card.init({
   content: {
@@ -33,5 +33,9 @@ Card.init({
   }
 }, {
   sequelize,
-  tableName: "card"
+  tableName: "card",
+  indexes: [
+    { fields: ['list_id'] },
+    { fields: ['position'] }
+  ]
 });
